@@ -6,6 +6,7 @@ const paramDefaults = {
 };
 
 let generation_settings = null;
+const baseUrl = new URLSearchParams(window.location.search).has('baseUrl') ? (new URLSearchParams(window.location.search).get('baseUrl') || 'http://127.0.0.1:8080') : 'http://127.0.0.1:8080';
 
 
 // Completes the prompt as a generator. Recommended for most use cases.
@@ -28,7 +29,7 @@ export async function* llama(prompt, params = {}, config = {}) {
 
   const completionParams = { ...paramDefaults, ...params, prompt };
 
-  const response = await fetch("/completion", {
+  const response = await fetch(`${baseUrl}/completion`, {
     method: 'POST',
     body: JSON.stringify(completionParams),
     headers: {
@@ -186,7 +187,7 @@ export const llamaComplete = async (params, controller, callback) => {
 // Get the model info from the server. This is useful for getting the context window and so on.
 export const llamaModelInfo = async () => {
   if (!generation_settings) {
-    generation_settings = await fetch("/model.json").then(r => r.json());
+    generation_settings = await fetch(`${baseUrl}/model.json`).then(r => r.json());
   }
   return generation_settings;
 }
